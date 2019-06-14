@@ -9,6 +9,7 @@
 import UIKit
 import Photos
 import PhotosUI
+import Social
 
 class LivePhotoCollectionViewController: UIViewController {
 
@@ -44,10 +45,29 @@ class LivePhotoCollectionViewController: UIViewController {
                                              action: #selector(LivePhotoCollectionViewController.playAnimation))
         
         self.navigationItem.rightBarButtonItem = self.playBarButton
-        
+    
     }
 
     
+    @IBAction func shareFacebook(_ sender: Any) {
+        if self.sampleImageView.isHidden {
+            
+        } else if let image = self.sampleImageView.image {
+            self.shareOnFB(shareImage: image, withAppName: "fb")
+        }
+    }
+    
+    @IBAction func shareTwitter(_ sender: Any) {
+        if self.sampleImageView.isHidden {
+            
+        } else if let image = self.sampleImageView.image {
+            self.shareOnFB(shareImage: image, withAppName: "twitter")
+        }
+    }
+    
+    @IBAction func shareMore(_ sender: Any) {
+        
+    }
     @IBAction func saveAsVideo(_ sender: Any) {
         var videoResource:PHAssetResource? = nil
         guard let _asset = self.livePhotoAsset else {return}
@@ -348,6 +368,59 @@ class LivePhotoCollectionViewController: UIViewController {
                     }
                 }
             }
+        }
+    }
+    
+    
+    public func shareOnFB(shareImage image:UIImage, withAppName app:String) {
+        
+        
+        guard let appUrl = URL.init(string: "\(app)://app") else {return}
+        let (appName, serviceType) = app.elementsEqual("fb") ? ("Facebook",SLServiceTypeFacebook) : ("Twitter",SLServiceTypeTwitter)
+        if UIApplication.shared.canOpenURL(appUrl){
+            guard let socialViewController = SLComposeViewController(forServiceType: serviceType) else {return}
+            socialViewController.setInitialText("#LIVE_VIDEO")
+            socialViewController.add(image)
+            socialViewController.completionHandler = { (result:SLComposeViewControllerResult) -> Void in
+                switch result {
+                    
+                case .cancelled:
+                    
+                    let msg = "Your \(appName) sharing aborted! Try again later."
+                    print("Cancelled")
+                    self.showAlert(Msg: msg, Icon: "app_icon", Loading: false)
+                case .done:
+                    
+                    let msg = "Your cropped image will be appeared on '\(appName)' soon! It may take some time. Thank you!"
+                    self.showAlert(Msg: msg, Icon: "app_icon", Loading: false)
+                }
+            }
+            self.present(socialViewController, animated: true) {
+                
+            }
+        } else {
+            let msg = "Your '\(appName)' sharing task is aborted! We are unable to locate your '\(appName)' app! please, Install & Login to the app. Thank you!"
+            self.showAlert(Msg: msg, Icon: "app_icon", Loading: false)
+            
+        }
+        
+    }
+    func showAlert(Msg msg:String, Icon icon:String? = nil,
+                   Loading isLoading:Bool = true){
+        DispatchQueue.main.async {
+            
+            let alert = UIAlertController(title: "Sharing...", message: msg, preferredStyle: UIAlertControllerStyle.actionSheet)
+            if let pref = alert.popoverPresentationController {
+                pref.permittedArrowDirections = []
+                pref.sourceView?.frame = CGRect(x: self.view.frame.midX, y: self.view.frame.midY, width: 0, height: 0)
+                
+            }
+            alert.addAction(UIAlertAction(title: "DISMISS", style: UIAlertActionStyle.default, handler: { (_action) in
+                
+            }))
+            self.present(alert, animated: true, completion: {
+                
+            })
         }
     }
 }

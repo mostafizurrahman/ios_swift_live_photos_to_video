@@ -150,6 +150,9 @@
                                                         <state key="normal" image="mr">
                                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         </state>
+                                                        <connections>
+                                                            <action selector="shareMore:" destination="jDm-XE-4d8" eventType="touchUpInside" id="Chs-O5-3bp"/>
+                                                        </connections>
                                                     </button>
                                                     <button opaque="NO" contentMode="center" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xI9-yS-5vk">
                                                         <rect key="frame" x="103" y="7.5" width="40" height="40"/>
@@ -164,12 +167,18 @@
                                                                 <color key="value" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                             </userDefinedRuntimeAttribute>
                                                         </userDefinedRuntimeAttributes>
+                                                        <connections>
+                                                            <action selector="shareTwitter:" destination="jDm-XE-4d8" eventType="touchUpInside" id="Pkn-ei-AyM"/>
+                                                        </connections>
                                                     </button>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rrQ-Yk-ij7">
                                                         <rect key="frame" x="21" y="7.5" width="40" height="40"/>
                                                         <state key="normal" image="fb">
                                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         </state>
+                                                        <connections>
+                                                            <action selector="shareFacebook:" destination="jDm-XE-4d8" eventType="touchUpInside" id="hZ2-JE-SST"/>
+                                                        </connections>
                                                     </button>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Facebook" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TOE-3o-mhU">
                                                         <rect key="frame" x="12" y="47.5" width="58" height="16"/>
