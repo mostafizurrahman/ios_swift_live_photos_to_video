@@ -12,6 +12,7 @@ import PhotosUI
 
 class LivePhotoCollectionViewController: UIViewController {
 
+    @IBOutlet weak var sampleImageView: UIImageView!
     @IBOutlet weak var widthLayout: NSLayoutConstraint!
     @IBOutlet weak var leadingSpace: NSLayoutConstraint!
     @IBOutlet weak var shareContainer: UIView!
@@ -20,7 +21,6 @@ class LivePhotoCollectionViewController: UIViewController {
     var livePhotoAsset:PHAsset?
     @IBOutlet weak var containerView:UIView!
     var imageArray:[UIImage] = []
-    var shareImageView:UIImageView?
     var player:AVPlayer?
     var playerLayer:AVPlayerLayer?
     var playBarButton:UIBarButtonItem!
@@ -51,8 +51,14 @@ class LivePhotoCollectionViewController: UIViewController {
         var videoResource:PHAssetResource? = nil
         guard let _asset = self.livePhotoAsset else {return}
         let resourcesArray = PHAssetResource.assetResources(for: _asset)
-        if (resourcesArray.count == 2) {
-            videoResource = resourcesArray[1];
+        if (resourcesArray.count > 1) {
+            for resource in resourcesArray {
+                if let url = resource.value(forKey: "_fileURL") as? NSURL,
+                    url.path?.contains("MOV") ?? false {
+                    videoResource = resource
+                    break
+                }
+            }
         }
         guard let video_res = videoResource else {return}
         if let video_url = video_res.value(forKey: "_fileURL") as? NSURL  {
@@ -155,11 +161,14 @@ class LivePhotoCollectionViewController: UIViewController {
         if self.navigationItem.rightBarButtonItem == self.playBarButton {
             photoView.startPlayback(with: .full)
         } else {
+            self.view.sendSubview(toBack: self.imageCollectionView)
             self.navigationItem.rightBarButtonItem = self.playBarButton
             self.leadingSpace.constant = UIScreen.main.bounds.width
             UIView.animate(withDuration: 0.4, animations: {
                 self.view.layoutIfNeeded()
             }) { (finished) in
+                self.sampleImageView.isHidden = true
+                self.player?.pause()
             }
         }
     }
@@ -206,5 +215,21 @@ extension LivePhotoCollectionViewController:UICollectionViewDelegate, UICollecti
         cell.layer.shadowRadius = 5
         cell.layer.shadowOffset = CGSize(width: -1, height: 2)
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let image = self.imageArray[indexPath.row]
+        self.sampleImageView.image = image
+        if self.sampleImageView.isHidden {
+            self.shareContainer.bringSubview(toFront: self.sampleImageView)
+            self.sampleImageView.isHidden = false
+            self.leadingSpace.constant = 0
+            self.navigationItem.rightBarButtonItem = self.doneBarButton
+            UIView.animate(withDuration: 0.4, animations: {
+                self.view.layoutIfNeeded()
+            }) { (finished) in
+                self.view.bringSubview(toFront: self.imageCollectionView)
+            }
+        }
     }
 }
