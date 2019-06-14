@@ -192,6 +192,9 @@
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Olt-OI-UCn">
                                                         <rect key="frame" x="185" y="7.5" width="40" height="40"/>
                                                         <state key="normal" image="ig"/>
+                                                        <connections>
+                                                            <action selector="shareinstagram:" destination="jDm-XE-4d8" eventType="touchUpInside" id="3Sh-5Y-CUj"/>
+                                                        </connections>
                                                     </button>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="More Options" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="H3E-5O-enQ">
                                                         <rect key="frame" x="247.5" y="47.5" width="79.5" height="16"/>

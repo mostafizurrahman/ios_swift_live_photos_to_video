@@ -25,6 +25,7 @@ class LivePhotoCollectionViewController: UIViewController {
     var playerLayer:AVPlayerLayer?
     var playBarButton:UIBarButtonItem!
     var doneBarButton:UIBarButtonItem!
+    var videoUrl:URL?
     @IBOutlet weak var imageCollectionView: UICollectionView!
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -70,6 +71,7 @@ class LivePhotoCollectionViewController: UIViewController {
             }) { (finished) in
                 self.navigationItem.rightBarButtonItem = self.doneBarButton
                 print(video_url)
+                self.videoUrl = video_url as URL
                 if let _player = self.player {
                     _player.pause()
                 }
@@ -196,6 +198,155 @@ class LivePhotoCollectionViewController: UIViewController {
         }
     }
 
+    
+    
+    
+    
+    
+    
+    var photoAsset:PHAsset?
+    var videoAsset:PHAsset?
+    var placeholder:PHObjectPlaceholder?
+    var albumAsset:PHAssetCollection?
+    ///SHARING
+    @IBAction func shareinstagram(_ sender: Any) {
+        if let _ = self.photoAsset {
+            self.openInstagramShare()
+        } else {
+            PHPhotoLibrary.requestAuthorization { (authorizationStatus) in
+                switch authorizationStatus {
+                case .authorized :
+                    self.create()
+                    break
+                case .notDetermined:
+                    print("not determined")
+                    break
+                case .restricted:
+                    print("restricted")
+                    break
+                case .denied:
+                    print("denied")
+                    break
+                }
+            }
+        }
+    }
+    
+    func create(Album name:String = "_ColorFinder_")  {
+        //Get PHFetch Options
+        let fetchOptions = PHFetchOptions()
+        fetchOptions.predicate = NSPredicate(format: "title = %@", name)
+        let collection : PHFetchResult = PHAssetCollection.fetchAssetCollections(
+            with: .album, subtype: .any, options: fetchOptions)
+        //Check return value - If found, then get the first album out
+        if let _: AnyObject = collection.firstObject {
+            self.albumAsset = collection.firstObject
+            DispatchQueue.main.async {
+                self.openInstagram()
+            }
+        } else {
+            //If not found - Then create a new album
+            PHPhotoLibrary.shared().performChanges({
+                let createAlbumRequest : PHAssetCollectionChangeRequest =
+                    PHAssetCollectionChangeRequest.creationRequestForAssetCollection(withTitle: name)
+                self.placeholder = createAlbumRequest.placeholderForCreatedAssetCollection
+            }, completionHandler: { success, error in
+                if success,
+                    let ph = self.placeholder {
+                    let collectionFetchResult = PHAssetCollection.fetchAssetCollections(
+                        withLocalIdentifiers: [ph.localIdentifier], options: nil)
+                    print(collectionFetchResult)
+                    self.albumAsset = collectionFetchResult.firstObject
+                    DispatchQueue.main.async {
+                        self.openInstagram()
+                    }
+                }
+            })
+        }
+    }
+    
+    fileprivate func openInstagram(){
+        
+        guard let __album = self.albumAsset else {return}
+        if self.sampleImageView.isHidden{
+            guard let _vid_url = videoUrl else {
+                return
+            }
+            if let _ = self.videoAsset {
+                self.openInstagramShare()
+                return
+            }
+            PHPhotoLibrary.shared().performChanges({
+                
+                guard let assetRequest = PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: _vid_url) else {
+                    return
+                }
+                let assetPlaceholder = assetRequest.placeholderForCreatedAsset
+                let photosAsset = PHAsset.fetchAssets(in: __album, options: nil)
+                let albumChangeRequest = PHAssetCollectionChangeRequest(
+                    for: __album, assets: photosAsset)
+                albumChangeRequest!.addAssets([assetPlaceholder] as NSFastEnumeration)
+            }) { saved, error in
+                if saved {
+                    let fetchOptions = PHFetchOptions()
+//                    fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
+                    
+                    // After uploading we fetch the PHAsset for most recent video and then get its current location url
+                    fetchOptions.predicate = NSPredicate(format: "mediaType == %d", PHAssetMediaType.video.rawValue)
+                    let fetchResult = PHAsset.fetchAssets(in: __album, options: fetchOptions)
+                    guard let _asset = fetchResult.lastObject else {return}
+                    self.videoAsset = _asset
+                    self.openInstagramShare()
+//                    PHImageManager().requestAVAsset(forVideo: fetchResult!, options: nil, resultHandler: { (avurlAsset, audioMix, dict) in
+//                        let newObj = avurlAsset as! AVURLAsset
+//                        print(newObj.url)
+//                        // This is the URL we need now to access the video from gallery directly.
+//                    })
+                }
+            }
+            return
+        }
+        if let image = self.sampleImageView.image {
+            if let _ = self.photoAsset {
+                self.openInstagramShare()
+                return
+            }
+            PHPhotoLibrary.shared().performChanges({
+                let assetRequest = PHAssetChangeRequest.creationRequestForAsset(from: image)
+                let assetPlaceholder = assetRequest.placeholderForCreatedAsset
+                let photosAsset = PHAsset.fetchAssets(in: __album, options: nil)
+                let albumChangeRequest = PHAssetCollectionChangeRequest(
+                    for: __album, assets: photosAsset)
+                albumChangeRequest!.addAssets([assetPlaceholder!] as NSFastEnumeration)
+                
+                
+            }, completionHandler: { success, error in
+                print("added image to album")
+                let fetchOptions = PHFetchOptions()
+                let desc = NSSortDescriptor.init(key: "creationDate", ascending: true)
+                fetchOptions.sortDescriptors = [desc]
+                
+                let fetchResult = PHAsset.fetchAssets(in: __album, options: fetchOptions)
+                guard let _asset = fetchResult.lastObject else {return}
+                self.photoAsset = _asset
+                self.openInstagramShare()
+            })
+        }
+    }
+    
+    fileprivate func openInstagramShare(){
+        DispatchQueue.main.async {
+            if let __asset = self.sampleImageView.isHidden ? self.videoAsset : self.photoAsset  {
+                let url_location = "instagram://library?LocalIdentifier=\(__asset.localIdentifier)"
+                guard let url = URL(string: url_location) else {return}
+                DispatchQueue.main.async {
+                    if UIApplication.shared.canOpenURL(url) {
+                        UIApplication.shared.openURL(url)
+                    }
+                }
+            }
+        }
+    }
 }
 
 
@@ -220,6 +371,7 @@ extension LivePhotoCollectionViewController:UICollectionViewDelegate, UICollecti
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let image = self.imageArray[indexPath.row]
         self.sampleImageView.image = image
+        self.photoAsset = nil
         if self.sampleImageView.isHidden {
             self.shareContainer.bringSubview(toFront: self.sampleImageView)
             self.sampleImageView.isHidden = false
