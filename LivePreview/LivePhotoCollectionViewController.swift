@@ -210,7 +210,10 @@ class LivePhotoCollectionViewController: UIViewController {
     var albumAsset:PHAssetCollection?
     ///SHARING
     @IBAction func shareinstagram(_ sender: Any) {
-        if let _ = self.photoAsset {
+        if let _ = self.photoAsset,
+            !self.sampleImageView.isHidden {
+            self.openInstagramShare()
+        } else if let _ = self.videoAsset {
             self.openInstagramShare()
         } else {
             PHPhotoLibrary.requestAuthorization { (authorizationStatus) in
