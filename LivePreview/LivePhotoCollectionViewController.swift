@@ -51,7 +51,7 @@ class LivePhotoCollectionViewController: UIViewController {
     
     @IBAction func shareFacebook(_ sender: Any) {
         if self.sampleImageView.isHidden {
-            
+            self.shareMore(sender)
         } else if let image = self.sampleImageView.image {
             self.shareOnFB(shareImage: image, withAppName: "fb")
         }
@@ -59,14 +59,36 @@ class LivePhotoCollectionViewController: UIViewController {
     
     @IBAction func shareTwitter(_ sender: Any) {
         if self.sampleImageView.isHidden {
-            
+            self.shareMore(sender)
         } else if let image = self.sampleImageView.image {
             self.shareOnFB(shareImage: image, withAppName: "twitter")
         }
     }
     
     @IBAction func shareMore(_ sender: Any) {
-        
+        if self.sampleImageView.isHidden {
+            
+            guard let __image =   self.videoUrl  else {
+                return
+            }
+            
+            let activityController = UIActivityViewController.init(activityItems: [__image], applicationActivities: nil)
+            activityController.popoverPresentationController?.sourceView = self.view
+            self.present(activityController, animated: true) {
+                
+            }
+        } else {
+            
+            guard let __image = self.sampleImageView.image else {
+                return
+            }
+            
+            let activityController = UIActivityViewController.init(activityItems: [__image], applicationActivities: nil)
+            activityController.popoverPresentationController?.sourceView = self.view
+            self.present(activityController, animated: true) {
+                
+            }
+        }
     }
     @IBAction func saveAsVideo(_ sender: Any) {
         var videoResource:PHAssetResource? = nil
@@ -255,7 +277,7 @@ class LivePhotoCollectionViewController: UIViewController {
         }
     }
     
-    func create(Album name:String = "_ColorFinder_")  {
+    func create(Album name:String = "_LivePhotos_")  {
         //Get PHFetch Options
         let fetchOptions = PHFetchOptions()
         fetchOptions.predicate = NSPredicate(format: "title = %@", name)
@@ -286,6 +308,51 @@ class LivePhotoCollectionViewController: UIViewController {
                 }
             })
         }
+    }
+    
+    
+    
+    @IBAction func save(_ sender: Any) {
+        
+        if self.sampleImageView.isHidden {
+            guard let image = self.sampleImageView.image else {
+                return
+            }
+            UIImageWriteToSavedPhotosAlbum(image, self, #selector(image(image:didFinishSavingWithError:contextInfo:)), nil)
+
+            
+        } else {
+            guard let url = self.videoUrl else {
+                return
+            }
+            PHPhotoLibrary.sharedPhotoLibrary().performChanges({
+                PHAssetChangeRequest.creationRequestForAssetFromVideoAtFileURL(url)
+            }) { saved, error in
+                if saved {
+                    let alertController = UIAlertController(title: "Your video was successfully saved", message: nil, preferredStyle: .Alert)
+                    let defaultAction = UIAlertAction(title: "Dismiss", style: .Default, handler: nil)
+                    alertController.addAction(defaultAction)
+                    self.presentViewController(alertController, animated: true, completion: nil)
+                }
+            }
+        }
+        
+        
+        
+    }
+    
+    @objc func image(image: UIImage, didFinishSavingWithError error: NSError?, contextInfo:UnsafePointer<Void>) {
+        guard error == nil else {
+            //Error saving image
+            return
+        }
+        let alertController = UIAlertController(title: "Your Image was successfully saved", message: nil, preferredStyle: .actionSheet)
+        let defaultAction = UIAlertAction(title: "Dismiss", style: .default, handler: nil)
+        alertController.addAction(defaultAction)
+        self.present(alertController, animated: true, completion: {
+            
+        })
+        //Image saved successfully
     }
     
     fileprivate func openInstagram(){
@@ -372,7 +439,7 @@ class LivePhotoCollectionViewController: UIViewController {
     }
     
     
-    public func shareOnFB(shareImage image:UIImage, withAppName app:String) {
+    public func shareOnFB(shareImage image:AnyObject, withAppName app:String) {
         
         
         guard let appUrl = URL.init(string: "\(app)://app") else {return}
@@ -380,7 +447,10 @@ class LivePhotoCollectionViewController: UIViewController {
         if UIApplication.shared.canOpenURL(appUrl){
             guard let socialViewController = SLComposeViewController(forServiceType: serviceType) else {return}
             socialViewController.setInitialText("#LIVE_VIDEO")
-            socialViewController.add(image)
+            if image is UIImage {
+                socialViewController.add(image as? UIImage)
+            }
+            
             socialViewController.completionHandler = { (result:SLComposeViewControllerResult) -> Void in
                 switch result {
                     

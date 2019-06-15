@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "LivePreview/LivePhotoCollectionViewController.swift"
-            timestampString = "582197550.57952"
+            timestampString = "582198884.051077"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "296"
-            endingLineNumber = "296"
+            startingLineNumber = "318"
+            endingLineNumber = "318"
             landmarkName = "openInstagram()"
             landmarkType = "7">
          </BreakpointContent>
