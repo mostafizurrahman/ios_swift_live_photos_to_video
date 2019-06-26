@@ -1,0 +1,6 @@
+framework module Pods_LivePreview {
+  umbrella header "Pods-LivePreview-umbrella.h"
+
+  export *
+  module * { export * }
+}

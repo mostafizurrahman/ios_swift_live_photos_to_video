@@ -314,7 +314,7 @@ class LivePhotoCollectionViewController: UIViewController {
     
     @IBAction func save(_ sender: Any) {
         
-        if self.sampleImageView.isHidden {
+        if !self.sampleImageView.isHidden {
             guard let image = self.sampleImageView.image else {
                 return
             }
@@ -325,14 +325,15 @@ class LivePhotoCollectionViewController: UIViewController {
             guard let url = self.videoUrl else {
                 return
             }
-            PHPhotoLibrary.sharedPhotoLibrary().performChanges({
-                PHAssetChangeRequest.creationRequestForAssetFromVideoAtFileURL(url)
+            
+            PHPhotoLibrary.shared().performChanges({
+                PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
             }) { saved, error in
                 if saved {
-                    let alertController = UIAlertController(title: "Your video was successfully saved", message: nil, preferredStyle: .Alert)
-                    let defaultAction = UIAlertAction(title: "Dismiss", style: .Default, handler: nil)
+                    let alertController = UIAlertController(title: "Your video was successfully saved to camera roll.", message: nil, preferredStyle: .actionSheet)
+                    let defaultAction = UIAlertAction(title: "Dismiss", style: .default, handler: nil)
                     alertController.addAction(defaultAction)
-                    self.presentViewController(alertController, animated: true, completion: nil)
+                    self.present(alertController, animated: true, completion: nil)
                 }
             }
         }

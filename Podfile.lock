@@ -1,0 +1,16 @@
+PODS:
+  - SwiftyStoreKit (0.14.2)
+
+DEPENDENCIES:
+  - SwiftyStoreKit
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - SwiftyStoreKit
+
+SPEC CHECKSUMS:
+  SwiftyStoreKit: cc399645796b094022fb650c148a0aed25995873
+
+PODFILE CHECKSUM: 236113f035b98e9137c1b1c6734c194cfac1158a
+
+COCOAPODS: 1.6.1
