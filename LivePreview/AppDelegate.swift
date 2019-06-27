@@ -14,7 +14,7 @@ import SwiftyStoreKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-static let SIDF = "com.imageapp.colorfind1.99"
+static let SIDF = "com.imageapp.live_1.99"
     static let SS = "a91b1b47800b4786818603b7898223f2"
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {

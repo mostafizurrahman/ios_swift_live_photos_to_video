@@ -50,88 +50,108 @@ class LivePhotoCollectionViewController: UIViewController {
 
     
     @IBAction func shareFacebook(_ sender: Any) {
-        if self.sampleImageView.isHidden {
-            self.shareMore(sender)
-        } else if let image = self.sampleImageView.image {
-            self.shareOnFB(shareImage: image, withAppName: "fb")
+        if UserDefaults.standard.bool(forKey: "subscribed"){
+            if self.sampleImageView.isHidden {
+                self.shareMore(sender)
+            } else if let image = self.sampleImageView.image {
+                self.shareOnFB(shareImage: image, withAppName: "fb")
+            }
+        } else {
+            self.performSegue(withIdentifier: "SubscribeSegue", sender: self)
         }
+        
     }
     
     @IBAction func shareTwitter(_ sender: Any) {
-        if self.sampleImageView.isHidden {
-            self.shareMore(sender)
-        } else if let image = self.sampleImageView.image {
-            self.shareOnFB(shareImage: image, withAppName: "twitter")
+        if UserDefaults.standard.bool(forKey: "subscribed"){
+            
+            if self.sampleImageView.isHidden {
+                self.shareMore(sender)
+            } else if let image = self.sampleImageView.image {
+                self.shareOnFB(shareImage: image, withAppName: "twitter")
+            }
+            
+        } else {
+            self.performSegue(withIdentifier: "SubscribeSegue", sender: self)
         }
     }
     
     @IBAction func shareMore(_ sender: Any) {
-        if self.sampleImageView.isHidden {
+        if UserDefaults.standard.bool(forKey: "subscribed"){
             
-            guard let __image =   self.videoUrl  else {
-                return
-            }
-            
-            let activityController = UIActivityViewController.init(activityItems: [__image], applicationActivities: nil)
-            activityController.popoverPresentationController?.sourceView = self.view
-            self.present(activityController, animated: true) {
+            if self.sampleImageView.isHidden {
                 
-            }
-        } else {
-            
-            guard let __image = self.sampleImageView.image else {
-                return
-            }
-            
-            let activityController = UIActivityViewController.init(activityItems: [__image], applicationActivities: nil)
-            activityController.popoverPresentationController?.sourceView = self.view
-            self.present(activityController, animated: true) {
-                
-            }
-        }
-    }
-    @IBAction func saveAsVideo(_ sender: Any) {
-        var videoResource:PHAssetResource? = nil
-        guard let _asset = self.livePhotoAsset else {return}
-        let resourcesArray = PHAssetResource.assetResources(for: _asset)
-        if (resourcesArray.count > 1) {
-            for resource in resourcesArray {
-                if let url = resource.value(forKey: "_fileURL") as? NSURL,
-                    url.path?.contains("MOV") ?? false {
-                    videoResource = resource
-                    break
-                }
-            }
-        }
-        guard let video_res = videoResource else {return}
-        if let video_url = video_res.value(forKey: "_fileURL") as? NSURL  {
-    
-            
-            self.leadingSpace.constant = 0
-            UIView.animate(withDuration: 0.4, animations: {
-                self.view.layoutIfNeeded()
-            }) { (finished) in
-                self.navigationItem.rightBarButtonItem = self.doneBarButton
-                print(video_url)
-                self.videoUrl = video_url as URL
-                if let _player = self.player {
-                    _player.pause()
-                }
-                self.playBarButton.style = UIBarButtonItemStyle.done
-                self.playerLayer?.contentsGravity = kCAGravityResizeAspectFill
-                self.player = AVPlayer(url: video_url as URL)
-                self.playerLayer = AVPlayerLayer(player: self.player)
-                self.playerLayer?.frame = self.shareContainer.bounds
-                guard  let lyr =  self.playerLayer else {
+                guard let __image =   self.videoUrl  else {
                     return
                 }
-                self.shareContainer?.layer.addSublayer(lyr)
-                self.player?.play()
-                NotificationCenter.default.addObserver(self, selector: #selector(self.avPlayerDidDismiss),
-                                                       name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
+                
+                let activityController = UIActivityViewController.init(activityItems: [__image], applicationActivities: nil)
+                activityController.popoverPresentationController?.sourceView = self.view
+                self.present(activityController, animated: true) {
+                    
+                }
+            } else {
+                
+                guard let __image = self.sampleImageView.image else {
+                    return
+                }
+                
+                let activityController = UIActivityViewController.init(activityItems: [__image], applicationActivities: nil)
+                activityController.popoverPresentationController?.sourceView = self.view
+                self.present(activityController, animated: true) {
+                    
+                }
             }
+        } else {
+            self.performSegue(withIdentifier: "SubscribeSegue", sender: self)
         }
         
+    }
+    @IBAction func saveAsVideo(_ sender: Any) {
+        if UserDefaults.standard.bool(forKey: "subscribed"){
+            var videoResource:PHAssetResource? = nil
+            guard let _asset = self.livePhotoAsset else {return}
+            let resourcesArray = PHAssetResource.assetResources(for: _asset)
+            if (resourcesArray.count > 1) {
+                for resource in resourcesArray {
+                    if let url = resource.value(forKey: "_fileURL") as? NSURL,
+                        url.path?.contains("MOV") ?? false {
+                        videoResource = resource
+                        break
+                    }
+                }
+            }
+            guard let video_res = videoResource else {return}
+            if let video_url = video_res.value(forKey: "_fileURL") as? NSURL  {
+                
+                
+                self.leadingSpace.constant = 0
+                UIView.animate(withDuration: 0.4, animations: {
+                    self.view.layoutIfNeeded()
+                }) { (finished) in
+                    self.navigationItem.rightBarButtonItem = self.doneBarButton
+                    print(video_url)
+                    self.videoUrl = video_url as URL
+                    if let _player = self.player {
+                        _player.pause()
+                    }
+                    self.playBarButton.style = UIBarButtonItemStyle.done
+                    self.playerLayer?.contentsGravity = kCAGravityResizeAspectFill
+                    self.player = AVPlayer(url: video_url as URL)
+                    self.playerLayer = AVPlayerLayer(player: self.player)
+                    self.playerLayer?.frame = self.shareContainer.bounds
+                    guard  let lyr =  self.playerLayer else {
+                        return
+                    }
+                    self.shareContainer?.layer.addSublayer(lyr)
+                    self.player?.play()
+                    NotificationCenter.default.addObserver(self, selector: #selector(self.avPlayerDidDismiss),
+                                                           name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
+                }
+            }
+        } else {
+            self.performSegue(withIdentifier: "SubscribeSegue", sender: self)
+        }
     }
     
     deinit {
@@ -252,28 +272,32 @@ class LivePhotoCollectionViewController: UIViewController {
     var albumAsset:PHAssetCollection?
     ///SHARING
     @IBAction func shareinstagram(_ sender: Any) {
-        if let _ = self.photoAsset,
-            !self.sampleImageView.isHidden {
-            self.openInstagramShare()
-        } else if let _ = self.videoAsset {
-            self.openInstagramShare()
-        } else {
-            PHPhotoLibrary.requestAuthorization { (authorizationStatus) in
-                switch authorizationStatus {
-                case .authorized :
-                    self.create()
-                    break
-                case .notDetermined:
-                    print("not determined")
-                    break
-                case .restricted:
-                    print("restricted")
-                    break
-                case .denied:
-                    print("denied")
-                    break
+        if UserDefaults.standard.bool(forKey: "subscribed"){
+            if let _ = self.photoAsset,
+                !self.sampleImageView.isHidden {
+                self.openInstagramShare()
+            } else if let _ = self.videoAsset {
+                self.openInstagramShare()
+            } else {
+                PHPhotoLibrary.requestAuthorization { (authorizationStatus) in
+                    switch authorizationStatus {
+                    case .authorized :
+                        self.create()
+                        break
+                    case .notDetermined:
+                        print("not determined")
+                        break
+                    case .restricted:
+                        print("restricted")
+                        break
+                    case .denied:
+                        print("denied")
+                        break
+                    }
                 }
             }
+        } else {
+            self.performSegue(withIdentifier: "SubscribeSegue", sender: self)
         }
     }
     
@@ -447,7 +471,7 @@ class LivePhotoCollectionViewController: UIViewController {
         let (appName, serviceType) = app.elementsEqual("fb") ? ("Facebook",SLServiceTypeFacebook) : ("Twitter",SLServiceTypeTwitter)
         if UIApplication.shared.canOpenURL(appUrl){
             guard let socialViewController = SLComposeViewController(forServiceType: serviceType) else {return}
-            socialViewController.setInitialText("#LIVE_VIDEO")
+//            socialViewController.setInitialText("#LIVE_VIDEO")
             if image is UIImage {
                 socialViewController.add(image as? UIImage)
             }
@@ -462,7 +486,7 @@ class LivePhotoCollectionViewController: UIViewController {
                     self.showAlert(Msg: msg, Icon: "app_icon", Loading: false)
                 case .done:
                     
-                    let msg = "Your cropped image will be appeared on '\(appName)' soon! It may take some time. Thank you!"
+                    let msg = "Your image will be appeared on '\(appName)' soon! It may take some time. Thank you!"
                     self.showAlert(Msg: msg, Icon: "app_icon", Loading: false)
                 }
             }
