@@ -2,16 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
+      "filename" : "save_image.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "instagram-1.png",
+      "filename" : "myspace-1.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "instagram.png",
+      "filename" : "myspace.png",
       "scale" : "3x"
     }
   ],

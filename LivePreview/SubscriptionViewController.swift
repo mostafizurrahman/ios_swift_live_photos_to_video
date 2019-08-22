@@ -189,6 +189,12 @@ class SubscriptionViewController: UIViewController {
         let appleValidator = AppleReceiptValidator(service: .production, sharedSecret: AppDelegate.SS)
         
         SwiftyStoreKit.verifyReceipt(using: appleValidator) { result in
+            DispatchQueue.main.async {
+                self.loadingView.isHidden = true
+                self.dismiss(animated: true, completion: {
+                    
+                })
+            }
             switch result {
             case .success(let receipt):
                 
@@ -206,12 +212,7 @@ class SubscriptionViewController: UIViewController {
                     NotificationCenter.default.post(Notification.init(name:
                         Notification.Name(rawValue: "remove_ad_notification")))
                     
-                    DispatchQueue.main.async {
-                        self.loadingView.isHidden = true
-                        self.dismiss(animated: true, completion: {
-                            
-                        })
-                    }
+                   
                     
                     
                 case .notPurchased:

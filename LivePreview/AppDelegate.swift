@@ -15,7 +15,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 static let SIDF = "com.imageapp.live_1.99"
-    static let SS = "a91b1b47800b4786818603b7898223f2"
+    static let SS = "6d6aa2e6911543de9ccc764a5747d40c"
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
@@ -107,7 +107,5 @@ static let SIDF = "com.imageapp.live_1.99"
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
-
-
 }
 

@@ -108,6 +108,8 @@ class LivePhotoCollectionViewController: UIViewController {
         
     }
     @IBAction func saveAsVideo(_ sender: Any) {
+        
+        self.imageCollectionView.isHidden = true;
         if UserDefaults.standard.bool(forKey: "subscribed"){
             var videoResource:PHAssetResource? = nil
             guard let _asset = self.livePhotoAsset else {return}
@@ -225,7 +227,7 @@ class LivePhotoCollectionViewController: UIViewController {
         if self.navigationItem.rightBarButtonItem == self.playBarButton {
             photoView.startPlayback(with: .full)
         } else {
-            self.view.sendSubview(toBack: self.imageCollectionView)
+            self.imageCollectionView.isHidden = false;
             self.navigationItem.rightBarButtonItem = self.playBarButton
             self.leadingSpace.constant = UIScreen.main.bounds.width
             UIView.animate(withDuration: 0.4, animations: {
@@ -233,6 +235,7 @@ class LivePhotoCollectionViewController: UIViewController {
             }) { (finished) in
                 self.sampleImageView.isHidden = true
                 self.player?.pause()
+                
             }
         }
     }
