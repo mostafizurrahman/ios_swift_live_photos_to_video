@@ -110,7 +110,7 @@ class LivePhotoCollectionViewController: UIViewController {
     @IBAction func saveAsVideo(_ sender: Any) {
         
         self.imageCollectionView.isHidden = true;
-        if UserDefaults.standard.bool(forKey: "subscribed"){
+        
             var videoResource:PHAssetResource? = nil
             guard let _asset = self.livePhotoAsset else {return}
             let resourcesArray = PHAssetResource.assetResources(for: _asset)
@@ -151,9 +151,7 @@ class LivePhotoCollectionViewController: UIViewController {
                                                            name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
                 }
             }
-        } else {
-            self.performSegue(withIdentifier: "SubscribeSegue", sender: self)
-        }
+        
     }
     
     deinit {
@@ -340,7 +338,10 @@ class LivePhotoCollectionViewController: UIViewController {
     
     
     @IBAction func save(_ sender: Any) {
-        
+        if !UserDefaults.standard.bool(forKey: "subscribed") {
+            self.performSegue(withIdentifier: "SubscribeSegue", sender: self)
+            return
+        }
         if !self.sampleImageView.isHidden {
             guard let image = self.sampleImageView.image else {
                 return
