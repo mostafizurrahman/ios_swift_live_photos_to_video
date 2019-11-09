@@ -60,7 +60,7 @@ class PhotoCollectionViewController: UICollectionViewController, UICollectionVie
     
     func showNowPhotoAccessAlert() {
         let alert = UIAlertController(title: "No Photo Access Permission",
-                                      message: "Please grant this App phot access to your photos in Settings --> Privacy",
+                                      message: "Please grant access to your Photos for loading live photos and saving image and videos.",
                                       preferredStyle: .alert)
         
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))

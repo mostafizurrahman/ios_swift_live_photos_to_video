@@ -13,6 +13,7 @@ import Social
 
 class LivePhotoCollectionViewController: UIViewController {
 
+    @IBOutlet weak var parentView: UIView!
     @IBOutlet weak var sampleImageView: UIImageView!
     @IBOutlet weak var widthLayout: NSLayoutConstraint!
     @IBOutlet weak var leadingSpace: NSLayoutConstraint!
@@ -340,20 +341,27 @@ class LivePhotoCollectionViewController: UIViewController {
                 PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
             }) { saved, error in
                 if saved {
-                    
-                    let alertController = UIAlertController(title: "Your video was successfully saved to camera roll near the original Live Photo.", message: nil, preferredStyle: .actionSheet)
-                    let defaultAction = UIAlertAction(title: "Dismiss", style: .default, handler: nil)
-                    alertController.addAction(defaultAction)
                     DispatchQueue.main.async {
-                        
-                        self.present(alertController, animated: true, completion: nil)
+                        let alertController = UIAlertController(title: "Your video was successfully saved to camera roll near the original Live Photo.", message: nil, preferredStyle: .actionSheet)
+                        if let pref = alertController.popoverPresentationController {
+                            pref.sourceView = self.parentView
+                            pref.sourceRect = CGRect.zero
+                            
+                            pref.permittedArrowDirections = []
+                            pref.sourceView?.frame = CGRect(x: self.view.frame.midX, y: self.view.frame.midY, width: 0, height: 0)
+                            
+                        }
+                        let defaultAction = UIAlertAction(title: "Dismiss", style: .default, handler: nil)
+                        alertController.addAction(defaultAction)
+                        DispatchQueue.main.async {
+                            self.present(alertController, animated: true, completion: {
+                                self.parentView.layoutIfNeeded()
+                            })
+                        }
                     }
                 }
             }
         }
-        
-        
-        
     }
     
     @objc func image(image: UIImage, didFinishSavingWithError error: NSError?, contextInfo:UnsafePointer<Void>) {
@@ -363,6 +371,14 @@ class LivePhotoCollectionViewController: UIViewController {
         }
         DispatchQueue.main.async {
             let alertController = UIAlertController(title: "Your Image was successfully saved", message: nil, preferredStyle: .actionSheet)
+            if let pref = alertController.popoverPresentationController {
+                pref.sourceView = self.parentView
+                pref.sourceRect = CGRect.zero
+                
+                pref.permittedArrowDirections = []
+                pref.sourceView?.frame = CGRect(x: self.view.frame.midX, y: self.view.frame.midY, width: 0, height: 0)
+                
+            }
             let defaultAction = UIAlertAction(title: "Dismiss", style: .default, handler: nil)
             alertController.addAction(defaultAction)
             self.present(alertController, animated: true, completion: {
@@ -502,6 +518,9 @@ class LivePhotoCollectionViewController: UIViewController {
             
             let alert = UIAlertController(title: "Sharing...", message: msg, preferredStyle: UIAlertControllerStyle.actionSheet)
             if let pref = alert.popoverPresentationController {
+                pref.sourceView = self.parentView
+                pref.sourceRect = CGRect.zero
+
                 pref.permittedArrowDirections = []
                 pref.sourceView?.frame = CGRect(x: self.view.frame.midX, y: self.view.frame.midY, width: 0, height: 0)
                 

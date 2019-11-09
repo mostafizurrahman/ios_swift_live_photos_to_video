@@ -331,6 +331,7 @@
                         <outlet property="imageCollectionView" destination="Nag-8i-qjc" id="V2o-Zz-74F"/>
                         <outlet property="indicator" destination="d8E-3r-PZl" id="hnS-Ur-d6V"/>
                         <outlet property="leadingSpace" destination="HFF-dR-qBN" id="kdB-sR-3It"/>
+                        <outlet property="parentView" destination="nYQ-V7-oO3" id="7Jg-jk-TIL"/>
                         <outlet property="sampleImageView" destination="wR9-U9-EKe" id="O4W-Ve-0IL"/>
                         <outlet property="shareContainer" destination="AjV-kq-O0N" id="JRe-OH-28l"/>
                         <outlet property="widthLayout" destination="Ru8-9u-ana" id="2YK-9c-dpK"/>
