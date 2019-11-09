@@ -16,12 +16,7 @@
 		551F19771E1A2A5700025E78 /* PhotoCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551F19761E1A2A5700025E78 /* PhotoCollectionViewController.swift */; };
 		551F19791E1A2A7500025E78 /* PhotoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551F19781E1A2A7500025E78 /* PhotoCollectionViewCell.swift */; };
 		551F197B1E1A2A9100025E78 /* LivePhotoCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551F197A1E1A2A9100025E78 /* LivePhotoCollectionViewController.swift */; };
-		BE247C7122C3B9BC00C15D95 /* TermsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE247C7022C3B9BC00C15D95 /* TermsViewController.swift */; };
 		BE247C7322C3BA4700C15D95 /* BorderButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE247C7222C3BA4700C15D95 /* BorderButton.swift */; };
-		BE503F8022B70A8B003E35C8 /* terms.html in Resources */ = {isa = PBXBuildFile; fileRef = BE503F7D22B70A8A003E35C8 /* terms.html */; };
-		BE503F8122B70A8B003E35C8 /* privacy.html in Resources */ = {isa = PBXBuildFile; fileRef = BE503F7E22B70A8B003E35C8 /* privacy.html */; };
-		BE503F8222B70A8B003E35C8 /* details.html in Resources */ = {isa = PBXBuildFile; fileRef = BE503F7F22B70A8B003E35C8 /* details.html */; };
-		BE503F8422B70C0B003E35C8 /* SubscriptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE503F8322B70C0B003E35C8 /* SubscriptionViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,12 +33,7 @@
 		551F19781E1A2A7500025E78 /* PhotoCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoCollectionViewCell.swift; sourceTree = "<group>"; };
 		551F197A1E1A2A9100025E78 /* LivePhotoCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LivePhotoCollectionViewController.swift; sourceTree = "<group>"; };
 		8AEC6154991861F10425B3EA /* Pods_LivePreview.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LivePreview.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		BE247C7022C3B9BC00C15D95 /* TermsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TermsViewController.swift; sourceTree = "<group>"; };
 		BE247C7222C3BA4700C15D95 /* BorderButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BorderButton.swift; sourceTree = "<group>"; };
-		BE503F7D22B70A8A003E35C8 /* terms.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = terms.html; sourceTree = "<group>"; };
-		BE503F7E22B70A8B003E35C8 /* privacy.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = privacy.html; sourceTree = "<group>"; };
-		BE503F7F22B70A8B003E35C8 /* details.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = details.html; sourceTree = "<group>"; };
-		BE503F8322B70C0B003E35C8 /* SubscriptionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptionViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,17 +86,12 @@
 		551F19631E1A291900025E78 /* LivePreview */ = {
 			isa = PBXGroup;
 			children = (
-				BE503F7F22B70A8B003E35C8 /* details.html */,
-				BE503F7E22B70A8B003E35C8 /* privacy.html */,
-				BE503F7D22B70A8A003E35C8 /* terms.html */,
 				39B9477622AE69B800C1F3DF /* ShareView.swift */,
 				BE247C7222C3BA4700C15D95 /* BorderButton.swift */,
 				551F19641E1A291900025E78 /* AppDelegate.swift */,
 				551F19761E1A2A5700025E78 /* PhotoCollectionViewController.swift */,
 				551F19781E1A2A7500025E78 /* PhotoCollectionViewCell.swift */,
 				551F197A1E1A2A9100025E78 /* LivePhotoCollectionViewController.swift */,
-				BE503F8322B70C0B003E35C8 /* SubscriptionViewController.swift */,
-				BE247C7022C3B9BC00C15D95 /* TermsViewController.swift */,
 				551F19681E1A291900025E78 /* Main.storyboard */,
 				551F196B1E1A291900025E78 /* Assets.xcassets */,
 				551F196D1E1A291900025E78 /* LaunchScreen.storyboard */,
@@ -178,9 +163,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BE503F8122B70A8B003E35C8 /* privacy.html in Resources */,
-				BE503F8222B70A8B003E35C8 /* details.html in Resources */,
-				BE503F8022B70A8B003E35C8 /* terms.html in Resources */,
 				551F196F1E1A291900025E78 /* LaunchScreen.storyboard in Resources */,
 				551F196C1E1A291900025E78 /* Assets.xcassets in Resources */,
 				551F196A1E1A291900025E78 /* Main.storyboard in Resources */,
@@ -241,13 +223,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BE503F8422B70C0B003E35C8 /* SubscriptionViewController.swift in Sources */,
 				39B9477722AE69B800C1F3DF /* ShareView.swift in Sources */,
 				551F19651E1A291900025E78 /* AppDelegate.swift in Sources */,
 				551F19771E1A2A5700025E78 /* PhotoCollectionViewController.swift in Sources */,
 				551F19791E1A2A7500025E78 /* PhotoCollectionViewCell.swift in Sources */,
 				551F197B1E1A2A9100025E78 /* LivePhotoCollectionViewController.swift in Sources */,
-				BE247C7122C3B9BC00C15D95 /* TermsViewController.swift in Sources */,
 				BE247C7322C3BA4700C15D95 /* BorderButton.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
