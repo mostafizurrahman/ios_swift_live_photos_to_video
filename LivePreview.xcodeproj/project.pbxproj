@@ -350,6 +350,7 @@
 			baseConfigurationReference = 19457875CA0B112C5CA23922 /* Pods-LivePreview.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = 2VZ7V842VP;
 				INFOPLIST_FILE = LivePreview/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
@@ -366,6 +367,7 @@
 			baseConfigurationReference = 3134DA317D5514BF17B7ED86 /* Pods-LivePreview.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = 2VZ7V842VP;
 				INFOPLIST_FILE = LivePreview/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
