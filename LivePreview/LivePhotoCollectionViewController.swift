@@ -28,6 +28,8 @@ class LivePhotoCollectionViewController: UIViewController {
     var playBarButton:UIBarButtonItem!
     var doneBarButton:UIBarButtonItem!
     var videoUrl:URL?
+
+    let context = CIContext.init(options: [:])
     @IBOutlet weak var imageCollectionView: UICollectionView!
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,94 +53,108 @@ class LivePhotoCollectionViewController: UIViewController {
 
     
     @IBAction func shareFacebook(_ sender: Any) {
-        if self.sampleImageView.isHidden {
-            self.shareMore(sender)
-        } else if let image = self.sampleImageView.image {
-            self.shareOnFB(shareImage: image, withAppName: "fb")
-        }
+        
+            if self.sampleImageView.isHidden {
+                self.shareMore(sender)
+            } else if let image = self.sampleImageView.image {
+                self.shareOnFB(shareImage: image, withAppName: "fb")
+            }
+     
+            
         
     }
     
     @IBAction func shareTwitter(_ sender: Any) {
-        if self.sampleImageView.isHidden {
-            self.shareMore(sender)
-        } else if let image = self.sampleImageView.image {
-            self.shareOnFB(shareImage: image, withAppName: "twitter")
-        }
+        
+            
+            if self.sampleImageView.isHidden {
+                self.shareMore(sender)
+            } else if let image = self.sampleImageView.image {
+                self.shareOnFB(shareImage: image, withAppName: "twitter")
+            }
+        
     }
     
     @IBAction func shareMore(_ sender: Any) {
         
-        if self.sampleImageView.isHidden {
-            
-            guard let __image =   self.videoUrl  else {
-                return
-            }
-            
-            let activityController = UIActivityViewController.init(activityItems: [__image], applicationActivities: nil)
-            activityController.popoverPresentationController?.sourceView = self.view
-            self.present(activityController, animated: true) {
+            if self.sampleImageView.isHidden {
                 
-            }
-        } else {
-            
-            guard let __image = self.sampleImageView.image else {
-                return
-            }
-            
-            let activityController = UIActivityViewController.init(activityItems: [__image], applicationActivities: nil)
-            activityController.popoverPresentationController?.sourceView = self.view
-            self.present(activityController, animated: true) {
+                guard let __image =   self.videoUrl  else {
+                    return
+                }
                 
+                let activityController = UIActivityViewController.init(activityItems: [__image], applicationActivities: nil)
+                activityController.popoverPresentationController?.sourceView = self.view
+                self.present(activityController, animated: true) {
+                    
+                }
+            } else {
+                
+                guard let __image = self.sampleImageView.image else {
+                    return
+                }
+                
+                let activityController = UIActivityViewController.init(activityItems: [__image], applicationActivities: nil)
+                activityController.popoverPresentationController?.sourceView = self.view
+                self.present(activityController, animated: true) {
+                    
+                }
             }
-        }
+        
         
     }
     @IBAction func saveAsVideo(_ sender: Any) {
         
-        self.imageCollectionView.isHidden = true;
-        
+        self.imageCollectionView.isHidden = true
             var videoResource:PHAssetResource? = nil
             guard let _asset = self.livePhotoAsset else {return}
             let resourcesArray = PHAssetResource.assetResources(for: _asset)
             if (resourcesArray.count > 1) {
                 for resource in resourcesArray {
-                    if let url = resource.value(forKey: "_fileURL") as? NSURL,
-                        url.path?.contains("MOV") ?? false {
+                    if resource.originalFilename.contains("MOV"){
                         videoResource = resource
                         break
                     }
                 }
             }
             guard let video_res = videoResource else {return}
-            if let video_url = video_res.value(forKey: "_fileURL") as? NSURL  {
+        if let documentsPathURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            //This gives you the URL of the path
+            let fileUrl = documentsPathURL.appendingPathComponent("sample.mov")
+            PHAssetResourceManager.default().writeData(for: video_res,
+                                                       toFile: fileUrl,
+                                                       options: nil,
+                                                       completionHandler: {_ in
+                                                        DispatchQueue.main.async {
+                                                            self.leadingSpace.constant = 0
+                                                            UIView.animate(withDuration: 0.4, animations: {
+                                                                self.view.layoutIfNeeded()
+                                                            }) { (finished) in
+                                                                self.navigationItem.rightBarButtonItem = self.doneBarButton
+                                                                print(fileUrl)
+                                                                self.videoUrl = fileUrl as URL
+                                                                if let _player = self.player {
+                                                                    _player.pause()
+                                                                }
+                                                                self.playBarButton.style = UIBarButtonItemStyle.done
+                                                                self.playerLayer?.contentsGravity = kCAGravityResizeAspectFill
+                                                                self.player = AVPlayer(url: fileUrl as URL)
+                                                                self.playerLayer = AVPlayerLayer(player: self.player)
+                                                                self.playerLayer?.frame = self.shareContainer.bounds
+                                                                guard  let lyr =  self.playerLayer else {
+                                                                    return
+                                                                }
+                                                                self.shareContainer?.layer.addSublayer(lyr)
+                                                                self.player?.play()
+                                                                NotificationCenter.default.addObserver(self, selector: #selector(self.avPlayerDidDismiss),
+                                                                                                       name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
+                                                            }
+                                                        }
                 
-                
-                self.leadingSpace.constant = 0
-                UIView.animate(withDuration: 0.4, animations: {
-                    self.view.layoutIfNeeded()
-                }) { (finished) in
-                    self.navigationItem.rightBarButtonItem = self.doneBarButton
-                    print(video_url)
-                    self.videoUrl = video_url as URL
-                    if let _player = self.player {
-                        _player.pause()
-                    }
-                    self.playBarButton.style = UIBarButtonItemStyle.done
-                    self.playerLayer?.contentsGravity = kCAGravityResizeAspectFill
-                    self.player = AVPlayer(url: video_url as URL)
-                    self.playerLayer = AVPlayerLayer(player: self.player)
-                    self.playerLayer?.frame = self.shareContainer.bounds
-                    guard  let lyr =  self.playerLayer else {
-                        return
-                    }
-                    self.shareContainer?.layer.addSublayer(lyr)
-                    self.player?.play()
-                    NotificationCenter.default.addObserver(self, selector: #selector(self.avPlayerDidDismiss),
-                                                           name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
-                }
-            }
-        
+               // Video file has been written to path specified via fileURL
+                                                        
+            })
+        }
     }
     
     deinit {
@@ -154,8 +170,6 @@ class LivePhotoCollectionViewController: UIViewController {
         player?.play()
     }
     
-    var editingContext: PHLivePhotoEditingContext?
-    
     
     fileprivate func applyEdgeFilterToImage() {
         guard let asset = livePhotoAsset else { return }
@@ -165,32 +179,37 @@ class LivePhotoCollectionViewController: UIViewController {
             var imageRatio:CGFloat = 0.0
             if input.mediaType == .image && input.mediaSubtypes.contains(.photoLive) {
                 // We have a live photo
-                self.editingContext = PHLivePhotoEditingContext(livePhotoEditingInput: input)
+                let editingContext = PHLivePhotoEditingContext(livePhotoEditingInput: input)
                 
-                let context = CIContext.init(options: [:])
-                self.editingContext?.frameProcessor = {[unowned self] (frame, error) -> CIImage? in
+                editingContext?.frameProcessor = { [weak self](frame, error) -> CIImage? in
                     var image = frame.image
-                    if let imageRef = context.createCGImage(image, from: image.extent) {
-                        let uiimage = UIImage.init(cgImage: imageRef)
-                        imageRatio = uiimage.size.width / uiimage.size.height
-                        self.imageArray.append(uiimage)
+                    if self?.context != nil, self?.imageArray != nil {
+                        if let imageRef = self?.context.createCGImage(image, from: image.extent) {
+                            let uiimage = UIImage.init(cgImage: imageRef)
+                            imageRatio = uiimage.size.width / uiimage.size.height
+                            self?.imageArray.append(uiimage)
+                        }
+                        image = image.applyingFilter("CIComicEffect", parameters: [:])
+                        return image
                     }
-                    image = image.applyingFilter("CIComicEffect", parameters: [:])
-                    return image
+                    return nil
                 }
-                
-                self.editingContext?.prepareLivePhotoForPlayback(withTargetSize: self.photoView.bounds.size, options: .none) { (livePhoto, error) in
+                if self.photoView == nil{ return}
+                editingContext?.prepareLivePhotoForPlayback(withTargetSize: self.photoView.bounds.size, options: .none) {[weak self] (livePhoto, error) in
 //                    guard let livePhoto = livePhoto else { print("Preparation error: \(error)"); return }
-                    let image_height = self.imageCollectionView.frame.height - 16
-                    let image_width = imageRatio * image_height
-                    let layout = UICollectionViewFlowLayout()
-                    layout.itemSize = CGSize(width: image_width, height: image_height)
-                    layout.scrollDirection = .horizontal
-                    layout.sectionInset = UIEdgeInsetsMake(8, 8, 8, 8)
-                    self.imageCollectionView.collectionViewLayout.invalidateLayout()
-                    self.imageCollectionView.collectionViewLayout = layout
-                    self.imageCollectionView.reloadData()
-                    self.indicator.isHidden = true
+                    if self?.imageCollectionView != nil {
+                        let image_height = (self?.imageCollectionView.frame.height ?? 0) - 16
+                        let image_width = imageRatio * image_height
+                        let layout = UICollectionViewFlowLayout()
+                        layout.itemSize = CGSize(width: image_width, height: image_height)
+                        layout.scrollDirection = .horizontal
+                        layout.sectionInset = UIEdgeInsetsMake(8, 8, 8, 8)
+                        self?.imageCollectionView.collectionViewLayout.invalidateLayout()
+                        self?.imageCollectionView.collectionViewLayout = layout
+                        self?.imageCollectionView.reloadData()
+                        self?.indicator.isHidden = true
+                    }
+                    
                     //            for _view in self.livePhotoView.subviews {
                     //                if let  __view = _view as? PHLivePhotoView {
                     //                    __view.livePhoto = livePhoto
@@ -262,29 +281,32 @@ class LivePhotoCollectionViewController: UIViewController {
     var albumAsset:PHAssetCollection?
     ///SHARING
     @IBAction func shareinstagram(_ sender: Any) {
-        if let _ = self.photoAsset,
-            !self.sampleImageView.isHidden {
-            self.openInstagramShare()
-        } else if let _ = self.videoAsset {
-            self.openInstagramShare()
-        } else {
-            PHPhotoLibrary.requestAuthorization { (authorizationStatus) in
-                switch authorizationStatus {
-                case .authorized :
-                    self.create()
-                    break
-                case .notDetermined:
-                    print("not determined")
-                    break
-                case .restricted:
-                    print("restricted")
-                    break
-                case .denied:
-                    print("denied")
-                    break
+        
+            if let _ = self.photoAsset,
+                !self.sampleImageView.isHidden {
+                self.openInstagramShare()
+            } else if let _ = self.videoAsset {
+                self.openInstagramShare()
+            } else {
+                PHPhotoLibrary.requestAuthorization { (authorizationStatus) in
+                    switch authorizationStatus {
+                    case .authorized :
+                        self.create()
+                        break
+                    case .notDetermined:
+                        print("not determined")
+                        break
+                    case .restricted:
+                        print("restricted")
+                        break
+                    case .denied:
+                        print("denied")
+                        break
+                    }
                 }
             }
-        }
+        
+            
     }
     
     func create(Album name:String = "_LivePhotos_")  {
@@ -323,7 +345,6 @@ class LivePhotoCollectionViewController: UIViewController {
     
     
     @IBAction func save(_ sender: Any) {
-   
         
         if !self.sampleImageView.isHidden {
             guard let image = self.sampleImageView.image else {
@@ -336,27 +357,22 @@ class LivePhotoCollectionViewController: UIViewController {
             guard let url = self.videoUrl else {
                 return
             }
-            
-            PHPhotoLibrary.shared().performChanges({
-                PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
-            }) { saved, error in
-                if saved {
-                    DispatchQueue.main.async {
-                        let alertController = UIAlertController(title: "Your video was successfully saved to camera roll near the original Live Photo.", message: nil, preferredStyle: .actionSheet)
-                        if let pref = alertController.popoverPresentationController {
-                            pref.sourceView = self.parentView
-                            pref.sourceRect = CGRect.zero
-                            
-                            pref.permittedArrowDirections = []
-                            pref.sourceView?.frame = CGRect(x: self.view.frame.midX, y: self.view.frame.midY, width: 0, height: 0)
-                            
+            DispatchQueue.main.async {
+                PHPhotoLibrary.shared().performChanges({
+                    PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
+                }) { saved, error in
+                    if saved {
+                        DispatchQueue.main.async {
+                        let alertController = UIAlertController(title: "Your video was successfully saved to camera roll.", message: nil, preferredStyle: .actionSheet)
+                        if let pop = alertController.popoverPresentationController {
+                            pop.sourceView = self.parentView
+                            pop.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
+                            pop.permittedArrowDirections = []
                         }
+                        
                         let defaultAction = UIAlertAction(title: "Dismiss", style: .default, handler: nil)
                         alertController.addAction(defaultAction)
-                        DispatchQueue.main.async {
-                            self.present(alertController, animated: true, completion: {
-                                self.parentView.layoutIfNeeded()
-                            })
+                        self.present(alertController, animated: true, completion: nil)
                         }
                     }
                 }
@@ -369,23 +385,17 @@ class LivePhotoCollectionViewController: UIViewController {
             //Error saving image
             return
         }
-        DispatchQueue.main.async {
-            let alertController = UIAlertController(title: "Your Image was successfully saved", message: nil, preferredStyle: .actionSheet)
-            if let pref = alertController.popoverPresentationController {
-                pref.sourceView = self.parentView
-                pref.sourceRect = CGRect.zero
-                
-                pref.permittedArrowDirections = []
-                pref.sourceView?.frame = CGRect(x: self.view.frame.midX, y: self.view.frame.midY, width: 0, height: 0)
-                
-            }
-            let defaultAction = UIAlertAction(title: "Dismiss", style: .default, handler: nil)
-            alertController.addAction(defaultAction)
-            self.present(alertController, animated: true, completion: {
-                
-            })
+        let alertController = UIAlertController(title: "Your Image was successfully saved", message: nil, preferredStyle: .actionSheet)
+        if let pop = alertController.popoverPresentationController {
+            pop.sourceView = self.parentView
+            pop.sourceRect =  CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
+            pop.permittedArrowDirections = []
         }
-        
+        let defaultAction = UIAlertAction(title: "Dismiss", style: .default, handler: nil)
+        alertController.addAction(defaultAction)
+        self.present(alertController, animated: true, completion: {
+            
+        })
         //Image saved successfully
     }
     
@@ -421,11 +431,7 @@ class LivePhotoCollectionViewController: UIViewController {
                     guard let _asset = fetchResult.lastObject else {return}
                     self.videoAsset = _asset
                     self.openInstagramShare()
-//                    PHImageManager().requestAVAsset(forVideo: fetchResult!, options: nil, resultHandler: { (avurlAsset, audioMix, dict) in
-//                        let newObj = avurlAsset as! AVURLAsset
-//                        print(newObj.url)
-//                        // This is the URL we need now to access the video from gallery directly.
-//                    })
+
                 }
             }
             return
@@ -466,6 +472,17 @@ class LivePhotoCollectionViewController: UIViewController {
                 DispatchQueue.main.async {
                     if UIApplication.shared.canOpenURL(url) {
                         UIApplication.shared.openURL(url)
+                    } else {
+                        let alertController = UIAlertController(title: "Instagram app not installed.", message: nil, preferredStyle: .actionSheet)
+                        if let pop = alertController.popoverPresentationController {
+                            pop.sourceView = self.parentView
+                            pop.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
+                            pop.permittedArrowDirections = []
+                        }
+                        
+                        let defaultAction = UIAlertAction(title: "Dismiss", style: .default, handler: nil)
+                        alertController.addAction(defaultAction)
+                        self.present(alertController, animated: true, completion: nil)
                     }
                 }
             }
@@ -499,12 +516,9 @@ class LivePhotoCollectionViewController: UIViewController {
                     self.showAlert(Msg: msg, Icon: "app_icon", Loading: false)
                 }
             }
-            DispatchQueue.main.async {
-                self.present(socialViewController, animated: true) {
-                    
-                }
+            self.present(socialViewController, animated: true) {
+                
             }
-            
         } else {
             let msg = "Your '\(appName)' sharing task is aborted! We are unable to locate your '\(appName)' app! please, Install & Login to the app. Thank you!"
             self.showAlert(Msg: msg, Icon: "app_icon", Loading: false)
@@ -512,28 +526,25 @@ class LivePhotoCollectionViewController: UIViewController {
         }
         
     }
+    
     func showAlert(Msg msg:String, Icon icon:String? = nil,
                    Loading isLoading:Bool = true){
         DispatchQueue.main.async {
             
             let alert = UIAlertController(title: "Sharing...", message: msg, preferredStyle: UIAlertControllerStyle.actionSheet)
-            if let pref = alert.popoverPresentationController {
-                pref.sourceView = self.parentView
-                pref.sourceRect = CGRect.zero
-
-                pref.permittedArrowDirections = []
-                pref.sourceView?.frame = CGRect(x: self.view.frame.midX, y: self.view.frame.midY, width: 0, height: 0)
-                
+            if let pop = alert.popoverPresentationController {
+                pop.sourceView = self.parentView
+                pop.permittedArrowDirections = []
+                pop.sourceRect =  CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
             }
+       
+            
             alert.addAction(UIAlertAction(title: "DISMISS", style: UIAlertActionStyle.default, handler: { (_action) in
                 
             }))
-            DispatchQueue.main.async {
-                self.present(alert, animated: true, completion: {
-                    
-                })
-            }
-            
+            self.present(alert, animated: true, completion: {
+                
+            })
         }
     }
 }
